@@ -235,6 +235,23 @@ class Simulation {
           self._simulationTimeout = null;
         }
         if((self._timeLimit > 0 && self._timeElapsed == self._timeLimit) || self._finishCondition(self)) {
+          for(let aiWrapper of this._aiList) {
+            aiWrapper._aiDefinition._code = `
+            importScripts('lib/tank.js');
+            var dataArray = eval('${JSON.stringify(aiWrapper.dataArray)}');
+            tank.init(function(settings, info) {});
+            tank.loop(function(state, control) { 
+              let ctrl = JSON.parse(JSON.stringify(dataArray[0]));
+              dataArray.shift();
+              control.THROTTLE = Number(ctrl.THROTTLE);
+              control.TURN = Number(ctrl.TURN);
+              control.GUN_TURN = Number(ctrl.GUN_TURN);
+              control.RADAR_TURN = Number(ctrl.RADAR_TURN);
+              control.SHOOT = Number(ctrl.SHOOT);
+              control.DEBUG = ctrl.DEBUG;
+              control.BOOST = ctrl.BOOST ? 1 : 0;
+            });`;
+          }
           self.stop();
           self._updateModel();
           self._updateView();

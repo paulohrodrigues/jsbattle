@@ -29,6 +29,7 @@ export default class AiWrapper {
       OUTBOX: [],
       DEBUG: {}
     };
+    this.dataArray = [];
   }
 
   setProcessingLimit(v) {
@@ -249,6 +250,9 @@ export default class AiWrapper {
     self._tank.setRadarTurn(self._controlData.RADAR_TURN);
     self._tank.setGunTurn(self._controlData.GUN_TURN );
     self._tank.setDebugData(self._controlData.DEBUG);
+    
+    self.dataArray.push(JSON.parse(JSON.stringify(self._controlData)));
+    
     if(self._controlData.SHOOT) {
       self._tank.shoot(self._controlData.SHOOT);
     }
@@ -262,7 +266,7 @@ export default class AiWrapper {
     if(self._tank.team) {
       self._tank.team.sendMessages(self._tank.id, messages);
     }
-
+    
     self._controlData.OUTBOX = [];
   }
 
